@@ -1,0 +1,4 @@
+# state will be stored centrally
+# currently on laptop -- eventually in formal backend
+*tfstate*
+.terraform/
