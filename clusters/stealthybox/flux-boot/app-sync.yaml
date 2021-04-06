@@ -12,6 +12,9 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  validation: none
+  validation: client
   dependsOn:
     - name: aad-pod-identity
+  decryption:
+    provider: sops
+
