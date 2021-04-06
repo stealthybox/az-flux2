@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 2m0s
-  path: ../azure-identities
+  path: ./clusters/stealthybox/azure-identities
   prune: true
   sourceRef:
     kind: GitRepository
