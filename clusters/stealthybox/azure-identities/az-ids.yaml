@@ -9,6 +9,15 @@
   "type": 0
 ---
 "apiVersion": "aadpodidentity.k8s.io/v1"
+"kind": "AzureIdentityBinding"
+"metadata":
+  "name": "acr-sync"
+  "namespace": "flux-system"
+"spec":
+  "azureIdentity": "acr-sync"
+  "selector": "acr-sync"
+---
+"apiVersion": "aadpodidentity.k8s.io/v1"
 "kind": "AzureIdentity"
 "metadata":
   "name": "sops-akv-decryptor"
@@ -17,3 +26,12 @@
   "clientID": "eb71c6db-3ada-4e54-ae07-e02271464eed"
   "resourceID": "/subscriptions/8c69185e-55f9-4d00-8e71-a1b1bb1386a1/resourceGroups/stealthybox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/sops-akv-decryptor"
   "type": 0
+---
+"apiVersion": "aadpodidentity.k8s.io/v1"
+"kind": "AzureIdentityBinding"
+"metadata":
+  "name": "sops-akv-decryptor"
+  "namespace": "flux-system"
+"spec":
+  "azureIdentity": "sops-akv-decryptor"
+  "selector": "sops-akv-decryptor"
