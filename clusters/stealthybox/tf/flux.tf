@@ -30,11 +30,11 @@ resource "azurerm_key_vault_key" "sops-cluster-stealthybox" {
 }
 
 # Useful for sops.yaml
-output "cluster-stealthybox-sops-yaml" {
+output "sops-yaml" {
   value = yamlencode({
     creation_rules : [
       {
-        path_regex      = ".yaml$"
+        path_regex      = "\\.yaml$"
         encrypted_regex = "^(data|stringData)$"
         azure_keyvault  = azurerm_key_vault_key.sops-cluster-stealthybox.id
       }
@@ -43,8 +43,8 @@ output "cluster-stealthybox-sops-yaml" {
 }
 
 # AzureIdentity Custom Resources to be added to the repo
-output "managed-identities" {
-  value = [
+output "azure-identities" {
+  value = join("---\n", [
     for mgd in azurerm_user_assigned_identity.identity : yamlencode({
       apiVersion = "aadpodidentity.k8s.io/v1"
       kind       = "AzureIdentity"
@@ -53,10 +53,10 @@ output "managed-identities" {
         namespace = "flux-system"
       }
       spec = {
-        clientId   = mgd.client_id
-        resourceId = mgd.id
+        clientID   = mgd.client_id
+        resourceID = mgd.id
         type       = 0
       }
     })
-  ]
+  ])
 }

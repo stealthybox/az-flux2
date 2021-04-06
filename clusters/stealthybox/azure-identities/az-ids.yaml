@@ -4,10 +4,9 @@
   "name": "acr-sync"
   "namespace": "flux-system"
 "spec":
-  "clientId": "7118e8ca-be04-4b85-8920-554aceccfde3"
-  "resourceId": "/subscriptions/8c69185e-55f9-4d00-8e71-a1b1bb1386a1/resourceGroups/stealthybox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/acr-sync"
+  "clientID": "7118e8ca-be04-4b85-8920-554aceccfde3"
+  "resourceID": "/subscriptions/8c69185e-55f9-4d00-8e71-a1b1bb1386a1/resourceGroups/stealthybox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/acr-sync"
   "type": 0
-
 ---
 "apiVersion": "aadpodidentity.k8s.io/v1"
 "kind": "AzureIdentity"
@@ -15,7 +14,6 @@
   "name": "sops-akv-decryptor"
   "namespace": "flux-system"
 "spec":
-  "clientId": "eb71c6db-3ada-4e54-ae07-e02271464eed"
-  "resourceId": "/subscriptions/8c69185e-55f9-4d00-8e71-a1b1bb1386a1/resourceGroups/stealthybox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/sops-akv-decryptor"
+  "clientID": "eb71c6db-3ada-4e54-ae07-e02271464eed"
+  "resourceID": "/subscriptions/8c69185e-55f9-4d00-8e71-a1b1bb1386a1/resourceGroups/stealthybox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/sops-akv-decryptor"
   "type": 0
-

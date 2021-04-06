@@ -1,5 +1,4 @@
 "creation_rules":
 - "azure_keyvault": "https://stealthybox-flux.vault.azure.net/keys/sops-cluster-stealthybox/d0f6f6ff20ba4522a0cba0b8108a71a9"
   "encrypted_regex": "^(data|stringData)$"
-  # "path_regex": "^.*.yaml$"
-
+  "path_regex": "\\.yaml$"
