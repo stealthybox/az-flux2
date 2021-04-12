@@ -33,12 +33,42 @@ resource "azurerm_kubernetes_cluster" "stealthybox" {
     }
   }
 }
+# Allow AAD Pod Identity to assign/un-assign identities for the underlying VM/VMSS
+#   + Omit the suggested access to identities within the node resource group
+#   https://azure.github.io/aad-pod-identity/docs/getting-started/role-assignment/#performing-role-assignments
+data "azurerm_resource_group" "stealthybox-nodes" {
+  name = azurerm_kubernetes_cluster.stealthybox.node_resource_group
+}
+resource "azurerm_role_assignment" "stealthybox-aad-pod-identity-vm-contributor" {
+  for_each             = { for i, v in azurerm_kubernetes_cluster.stealthybox.kubelet_identity : i => v }
+  principal_id         = each.value.object_id
+  role_definition_name = "Virtual Machine Contributor"
+
+  scope = data.azurerm_resource_group.stealthybox-nodes.id
+}
+# Allow AAD Pod Identity to access identities within the terraform managed resource group
+#   https://azure.github.io/aad-pod-identity/docs/getting-started/role-assignment/#user-assigned-identities-that-are-not-within-the-node-resource-group
+resource "azurerm_role_assignment" "stealthybox-aad-pod-identity-identity-operator" {
+  for_each             = { for i, v in azurerm_kubernetes_cluster.stealthybox.kubelet_identity : i => v }
+  principal_id         = each.value.object_id
+  role_definition_name = "Managed Identity Operator"
+
+  scope = azurerm_resource_group.stealthybox.id
+}
 
 resource "azurerm_container_registry" "weavedx" {
   name                = "weavedx"
   resource_group_name = azurerm_resource_group.stealthybox.name
   location            = azurerm_resource_group.stealthybox.location
   sku                 = "Basic"
+}
+# attach ACR to AKS cluster
+resource "azurerm_role_assignment" "stealthybox-aks-acr" {
+  for_each             = { for i, v in azurerm_kubernetes_cluster.stealthybox.kubelet_identity : i => v }
+  principal_id         = each.value.object_id
+  role_definition_name = "AcrPull"
+
+  scope = azurerm_container_registry.weavedx.id
 }
 
 resource "azurerm_key_vault" "stealthybox" {
@@ -52,16 +82,8 @@ resource "azurerm_key_vault" "stealthybox" {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions     = ["Get", "Create", "Encrypt", "Decrypt"]
+    key_permissions     = ["Get", "List", "Create", "Encrypt", "Decrypt"]
     secret_permissions  = ["Get"]
     storage_permissions = ["Get"]
   }
-}
-
-# attach ACR to AKS cluster
-resource "azurerm_role_assignment" "stealthybox-aks-acr" {
-  principal_id         = azurerm_kubernetes_cluster.stealthybox.kubelet_identity[0].object_id
-  role_definition_name = "AcrPull"
-
-  scope = azurerm_container_registry.weavedx.id
 }

@@ -1,23 +1,21 @@
 # managed identities for Flux
-locals {
-  managed_identities = {
-    acr-sync           = "acrPull"
-    sops-akv-decryptor = "Key Vault Crypto User"
-  }
-}
 resource "azurerm_user_assigned_identity" "identity" {
-  for_each = local.managed_identities
-  name     = each.key
-
+  for_each            = toset(["acr-sync", "sops-akv-decryptor"])
+  name                = each.value
   resource_group_name = azurerm_resource_group.stealthybox.name
   location            = azurerm_resource_group.stealthybox.location
 }
-resource "azurerm_role_assignment" "role-assignment" {
-  for_each             = local.managed_identities
-  principal_id         = azurerm_user_assigned_identity.identity[each.key].principal_id
-  role_definition_name = each.value
+resource "azurerm_role_assignment" "acr-sync" {
+  principal_id         = azurerm_user_assigned_identity.identity["acr-sync"].principal_id
+  role_definition_name = "acrPull"
 
   scope = azurerm_resource_group.stealthybox.id
+}
+resource "azurerm_key_vault_access_policy" "sops-akv-decryptor" {
+  key_vault_id    = azurerm_key_vault.stealthybox.id
+  tenant_id       = data.azurerm_client_config.current.tenant_id
+  object_id       = azurerm_user_assigned_identity.identity["sops-akv-decryptor"].principal_id
+  key_permissions = ["Decrypt"]
 }
 
 # Flux SOPS crypto
@@ -68,7 +66,7 @@ output "azure-identities" {
         }
         spec = {
           azureIdentity = azid.name
-          selector = azid.name
+          selector      = azid.name
         }
       })
     ]
